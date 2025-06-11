@@ -1,4 +1,5 @@
 using Autobarn.Data;
+using EasyNetQ;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,9 @@ builder.Services.AddOpenApiDocument(document => {
 	document.Title = "Autobarn API";
 });
 
+var amqp = builder.Configuration.GetConnectionString("rabbitmq");
+var bus = RabbitHutch.CreateBus(amqp);
+builder.Services.AddSingleton(bus);
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
