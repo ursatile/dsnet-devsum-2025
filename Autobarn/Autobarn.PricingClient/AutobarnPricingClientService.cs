@@ -31,7 +31,7 @@ public class AutobarnPricingClientService(
 		var price = await grpcPricerClient.GetPriceAsync(request);
 		logger.LogInformation("Got price: {price} {currencyCode}", price.Price, price.CurrencyCode);
 	}
-
+	w
 	public Task StopAsync(CancellationToken cancellationToken) {
 		logger.LogInformation("Stopping pricing client...");
 		return Task.CompletedTask;
