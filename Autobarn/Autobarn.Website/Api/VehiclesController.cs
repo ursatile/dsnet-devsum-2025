@@ -46,13 +46,25 @@ public class VehiclesController(
 
 	[HttpGet("{id}")]
 	[ProducesResponseType(404)]
-	public async Task<ActionResult<Vehicle>> GetVehicle(string id) {
+	public async Task<ActionResult<ExpandoObject>> GetVehicle(string id) {
 		var vehicle = await db.Vehicles
 			.Include(v => v.Model)
 			.ThenInclude(m => m.Make)
 			.FirstOrDefaultAsync(v => v.Registration == id);
 		if (vehicle == null) return NotFound();
-		return vehicle;
+		var result = vehicle.ToDynamic();
+		result._links = new {
+			self = new {
+				href = $"/api/vehicles/{id}"
+			},
+			make = new {
+				href = $"/api/makes/{vehicle.Model.Make.Code}"
+			},
+			model = new {
+				href = $"/api/makes/{vehicle.Model.Code}"
+			}
+		};
+		return result;
 	}
 
 	[HttpPut("{id}")]

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Autobarn.Data;
 using EasyNetQ;
 using Microsoft.Data.Sqlite;
@@ -13,7 +14,9 @@ sqliteConnection.Open();
 builder.Services.AddDbContext<AutobarnDbContext>(options => options.UseSqlite(sqliteConnection));
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+	.AddJsonOptions(options
+		=> options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase);
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 builder.Services.AddOpenApiDocument(document => {
