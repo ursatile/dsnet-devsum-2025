@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Autobarn.Data;
+using Autobarn.Website.Hubs;
 using EasyNetQ;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,9 @@ builder.Services.AddOpenApiDocument(document => {
 var amqp = builder.Configuration.GetConnectionString("rabbitmq");
 var bus = RabbitHutch.CreateBus(amqp);
 builder.Services.AddSingleton(bus);
+
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
@@ -42,5 +46,5 @@ app.MapControllerRoute(
 
 app.UseOpenApi();
 app.UseSwaggerUi();
-
+app.MapHub<AutobarnHub>("/hub");
 app.Run();
