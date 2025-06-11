@@ -8,4 +8,7 @@ public class Vehicle {
 	public int Year { get; set; }
 	public CarModel Model { get; set; }
 	public string ModelCode { get; set; }
+
+	public override string ToString()
+		=> $"{Registration} ({ModelCode}, {Year}, {Color}";
 }
