@@ -21,6 +21,7 @@ public class VehiclesController(
 			.ToListAsync();
 
 	[HttpGet("{id}")]
+	[ProducesResponseType(404)]
 	public async Task<ActionResult<Vehicle>> GetVehicle(string id) {
 		var vehicle = await db.Vehicles
 			.Include(v => v.Model)

@@ -9,6 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.5" />
+		<PackageReference Include="NSwag.AspNetCore" Version="14.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>
