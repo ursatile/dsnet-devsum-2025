@@ -30,8 +30,11 @@ public class AutobarnPricingClientService(
 		};
 		var price = await grpcPricerClient.GetPriceAsync(request);
 		logger.LogInformation("Got price: {price} {currencyCode}", price.Price, price.CurrencyCode);
+		var nvpm = new NewVehiclePriceMessage(nvm.Registration, nvm.Make,
+			nvm.Model, nvm.Year, nvm.Color, price.Price, price.CurrencyCode);
+		await bus.PubSub.PublishAsync(nvpm);
 	}
-	w
+	
 	public Task StopAsync(CancellationToken cancellationToken) {
 		logger.LogInformation("Stopping pricing client...");
 		return Task.CompletedTask;
