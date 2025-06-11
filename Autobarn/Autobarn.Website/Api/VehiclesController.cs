@@ -5,6 +5,7 @@ using Autobarn.Data.Entities;
 using Autobarn.Messages;
 using Autobarn.Website.Models;
 using EasyNetQ;
+using System.Dynamic;
 
 namespace Autobarn.Website.Api;
 
@@ -16,12 +17,32 @@ public class VehiclesController(
 	IBus bus
 ) : ControllerBase {
 
+
+	private dynamic Paginate(string url, int index, int count, int total) {
+		dynamic links = new ExpandoObject();
+		links.self = new { href = url };
+		links.final = new { href = $"{url}?index={total - (total % count)}&count={count}" };
+		links.first = new { href = $"{url}?index=0&count={count}" };
+		if (index > 0) links.previous = new { href = $"{url}?index={index - count}&count={count}" };
+		if (index + count < total) links.next = new { href = $"{url}?index={index + count}&count={count}" };
+		return links;
+	}
+
 	[HttpGet]
-	public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles()
-		=> await db.Vehicles
+	public async Task<ActionResult<object>> GetVehicles(
+		int index, int count = 10) {
+		var total = await db.Vehicles.CountAsync();
+		var items = await db.Vehicles
 			.Include(v => v.Model)
 			.ThenInclude(m => m.Make)
+			.Skip(index)
+			.Take(count)
 			.ToListAsync();
+		return new {
+			_links = Paginate("/api/vehicles", index, count, total),
+			items
+		};
+	}
 
 	[HttpGet("{id}")]
 	[ProducesResponseType(404)]
